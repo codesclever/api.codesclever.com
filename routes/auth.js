@@ -14,11 +14,11 @@ const router = express.Router();
 env.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-router.get("/", fetchuser, async (req, res) => {
-    // let req_data = req.user;
-    const dt = await SingUpSchema.findOne({ObjectId:req.user},{email:true,fullname:true,phone:true,_id:false});
-    res.json(dt);
-});
+
+router.get('/',(res,req)=>{
+    res.send({status:'ok'});
+})
+
 
 router.post(
     "/sendotp",
@@ -182,9 +182,7 @@ router.post('/getvaliduser',fetchuser,async (req,res)=>{
     res.send({success:true,reason:'User Is Know'});
 })
 
-router.get('/',(res,req)=>{
-    res.send({status:'ok'});
-})
+
 
 
 module.exports = router;
