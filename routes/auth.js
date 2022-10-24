@@ -182,5 +182,9 @@ router.post('/getvaliduser',fetchuser,async (req,res)=>{
     res.send({success:true,reason:'User Is Know'});
 })
 
+router.get('/',(res,req)=>{
+    res.send({status:'ok'});
+})
+
 
 module.exports = router;
