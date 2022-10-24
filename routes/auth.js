@@ -16,7 +16,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 router.get('/',(res,req)=>{
-    res.send({status:'ok'});
+    req.send({status:'ok'});
 })
 
 
