@@ -6,6 +6,7 @@ env.config();
 
 
 const PORT = 8000;
+const HOST = '0.0.0.0'
 const app = express();
 
 // For connect to mongodb
@@ -22,6 +23,6 @@ app.use('/api/payment',require('./routes/payment'));
 console.log(process.env.MONGO_URI);
 
 
-app.listen(PORT,()=>{
+app.listen(PORT,HOST,()=>{
     console.log('0.0.0.0.'+PORT);
 })
