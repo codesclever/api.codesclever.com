@@ -176,7 +176,7 @@ router.post(
                 reason: "login successfully",
             });
         } catch (error) {
-            console.log(error);
+            console.log("Password Invalid");
             // res.status(200).send({success:status,reason:'Please check password'});
         }
     }
