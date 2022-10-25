@@ -36,7 +36,7 @@ router.post(
             status = true;
         }
 
-        let cOtp = random.int((min = 100000), (max = 1000000))
+        let cOtp = random.int((min = 100000), (max = 1000000));
 
         let data = {
             email: req.body.email,
@@ -183,8 +183,8 @@ router.post(
 
 router.post("/getuserinfo", fetchuser, async (req, res) => {
     // let req_data = req.user;
-    const dt = await SingUpSchema.findOne({ObjectId:req.user},{email:true,fullname:true,phone:true,_id:false});
-    res.json(dt);
+    const dt = await SingUpSchema.findOne({ObjectId:req.user.id},{email:true,fullname:true,phone:true,_id:false});
+    res.status(200).send(dt);
 });
 
 router.post('/getvaliduser',fetchuser,async (req,res)=>{

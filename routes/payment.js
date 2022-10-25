@@ -20,7 +20,7 @@ const razorpay = new Razorpay({
 
 router.post('/verification',async (req,res)=>{
     // do the verifications
-    const secret = 'rbs1&gbs2=mmbs&&fbbs';
+    const secret = 'rbs1&gbs2=mmbs&&fbbs'; //same as rezorpaywebhook secret
     const crypto = require('crypto');
 
 	const shasum = crypto.createHmac('sha256', secret);
@@ -45,20 +45,12 @@ router.post('/verification',async (req,res)=>{
                 console.log(err);
             }
         });
-        res.json({ status: 'ok' });
-
-
-        // console.log('ptInfo is a here',ptInfo); 
-
-		// console.log('request is legit');
+        
 		// process it
         // console.log(req.body.payload.payment.entity);
 		// require('fs').writeFileSync('payment1.json', JSON.stringify(req.body, null, 4))
 
-	} else {
-		// pass it
 	}
-
 	res.json({ status: 'ok' })
 
 })
@@ -79,7 +71,7 @@ router.post('/razorpay',fetchuser, async (req,res)=>{
     let dt = null;
 
     try {
-        dt = await SingUpSchema.findOne({ObjectId:req.user},{email:true,fullname:true,phone:true,_id:false});
+        dt = await SingUpSchema.findOne({ObjectId:req.user.id},{email:true,fullname:true,phone:true,_id:false});
     } catch (error) {
         console.log(error);
     }
