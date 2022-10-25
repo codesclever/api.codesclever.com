@@ -9,6 +9,7 @@ const saveOtp = require("../models/saveotp");
 const SingUpSchema = require("../models/SingUpSchema");
 const sendOtpToUser = require("./validation/sendotptouser");
 const isValidOtp = require("./validation/isvalidotp");
+const SaveAuthToken = require("../models/SaveAuthToken");
 const fetchuser = require('../middleware/fetchuser');
 const router = express.Router();
 env.config();
@@ -159,6 +160,14 @@ router.post(
             };
 
             const authtoken = jwt.sign(data, JWT_SECRET);
+            const auData = {authToken:authtoken};
+            SaveAuthToken.create(auData,(err)=>{
+                if(err){
+                    console.log(err);
+                }
+            })
+
+            
             status = true;
             res.status(200).send({
                 success: status,
@@ -182,6 +191,18 @@ router.post('/getvaliduser',fetchuser,async (req,res)=>{
     res.send({success:true,reason:'User Is Know'});
 })
 
+router.post('/logout',fetchuser,(req,res)=>{
+    const authToken = req.header('auth-token');
+    SaveAuthToken.deleteOne({authToken:authToken},(err)=>{
+        if(err){
+            console.log(err);
+            res.status(200).send({success:false,reason:'Something went wrong'});
+        }
+        else{
+            res.status(200).send({success:true,reason:'Logout'});
+        }
+    });
+})
 
 
 

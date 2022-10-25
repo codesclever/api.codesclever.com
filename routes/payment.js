@@ -14,8 +14,8 @@ const SaveFinalCandi = require('../models/SaveFinalCandi');
 
 
 const razorpay = new Razorpay({
-	key_id: 'rzp_test_ncEfMV6eptSdZh',
-	key_secret: 'UNQ9DlcVFtf75KqssbSWLVWP'
+	key_id: 'rzp_live_4TbWavxZvbhMjv',
+	key_secret: 'yvhjvbbVcCGy4Q4PMoOzTy6k'
 });
 
 router.post('/verification',async (req,res)=>{
