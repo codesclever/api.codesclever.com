@@ -1,25 +1,19 @@
 const saveOtp = require("../../models/saveotp");
 const SignUpSchema = require("../../models/SingUpSchema");
 
-isValidOtp = async (email,otp,isFirst=false)=>{
-    if(isFirst){
-        let getU = await SignUpSchema.findOne({email:email});
-        if(getU){
-            return {success:false,reason:'User is all ready exist'};
-        }
-    }
+isValidOtp = async (email,otp)=>{
 
     let isValid = await saveOtp.findOne({email:email,otp:otp});
     try {
         if(isValid.otp === otp){
             saveOtp.deleteMany({email:email},(err)=>{console.log('delete otp successfully form database')});
-            return {success:true,reason:"Sign in successfully"};
+            return true
         }
         else{
-            return {success:false,reason:"Please enter valid otp"};
+            return false
         }
     } catch (error) {
-        return {success:false,reason:"User not exits"};
+        return false
     }
  
 }

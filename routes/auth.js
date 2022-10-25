@@ -22,7 +22,7 @@ router.get("/", (res, req) => {
 
 router.post(
     "/sendotp",
-    [body("email", "enter valid mail").isEmail().exists()],
+    [body("email", "Enter valid mail").isEmail().exists()],
     async (req, res) => {
         let status = false;
         const validReq = validationResult(req);
@@ -98,9 +98,9 @@ router.post(
                 reason: "Please Enter all fields",
             });
         } else {
-            let isValid = await isValidOtp(req.body.email, req.body.otp, true);
+            let isValid = await isValidOtp(req.body.email, req.body.otp);
 
-            if (isValid.success) {
+            if (isValid) {
                 let bySalt = await bcrypt.genSalt(10);
                 let hashPassword = await bcrypt.hash(req.body.password, bySalt);
                 let signUpData = {
@@ -115,9 +115,10 @@ router.post(
                         res.status(200).json(isValid);
                     }
                 });
+                res.send({ success: true, reason: "Sign Up Successfully " });
+            } else {
+                res.send({ success: false, reason: "Please enter valid OTP" });
             }
-
-            res.send(isValid);
         }
     }
 );
@@ -141,66 +142,65 @@ router.post(
                 email: req.body.email,
                 password: req.body.password,
             };
-            let User = null;
-            let passwordCompare = null;
 
-
-        try {
-            User = await SingUpSchema.findOne({ email: req_data.email });
-            if (!User) {
-                res.status(200).send({
-                    success: false,
-                    reason: "Please enter valid password",
-                });
-            } else {
-                const passwordCompare = await bcrypt.compare(
-                    req_data.password,
-                    User.password
-                );
-
-                if (!passwordCompare) {
+            try {
+                User = await SingUpSchema.findOne({ email: req_data.email });
+                if (!User) {
                     res.status(200).send({
                         success: false,
                         reason: "Please enter valid password",
                     });
                 } else {
-                    let data = {
-                        user: {
-                            id: User.id,
-                        },
-                    };
+                    const passwordCompare = await bcrypt.compare(
+                        req_data.password,
+                        User.password
+                    );
 
-                    const authtoken = jwt.sign(data, JWT_SECRET);
-                    const auData = { authToken: authtoken };
-                    SaveAuthToken.create(auData, (err) => {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
+                    if (!passwordCompare) {
+                        res.status(200).send({
+                            success: false,
+                            reason: "Please enter valid password",
+                        });
+                    } else {
+                        let data = {
+                            user: {
+                                id: User.id,
+                            },
+                        };
 
-                    status = true;
-                    res.status(200).send({
-                        success: status,
-                        authToken: authtoken,
-                        reason: "login successfully",
-                    });
+                        const authtoken = jwt.sign(data, JWT_SECRET);
+                        const auData = { authToken: authtoken };
+                        SaveAuthToken.create(auData, (err) => {
+                            if (err) {
+                                console.log(err);
+                            }
+                        });
+
+                        status = true;
+                        res.status(200).send({
+                            success: status,
+                            authToken: authtoken,
+                            reason: "login successfully",
+                        });
+                    }
                 }
+            } catch (error) {
+                console.log("Password Invalid");
+                res.status(200).send({
+                    success: status,
+                    reason: "Please check password",
+                });
             }
-        } catch (error) {
-            console.log("Password Invalid");
-            res.status(200).send({success:status,reason:'Please check password'});
+
+            //
         }
-
-        // 
-    }
-    //
-
+        //
     }
 );
 
 router.post("/getuserinfo", fetchuser, async (req, res) => {
     // let req_data = req.user;
-    
+
     const dt = await SingUpSchema.findOne(
         { _id: mongo.ObjectId(req.user.id) },
         { email: true, fullname: true, phone: true, _id: false }
@@ -226,5 +226,57 @@ router.post("/logout", fetchuser, (req, res) => {
         }
     });
 });
+
+router.post(
+    "/forgotpass",
+    [
+        body("email", "Enter valid mail").isEmail().exists(),
+        body("otp", "Please enter all fields").exists(),
+        body("password", "Please enter all fields").exists(),
+    ],
+    async (req, res) => {
+        let status = false;
+        const validReq = validationResult(req);
+        if (!validReq.isEmpty()) {
+            res.status(200).json({
+                success: status,
+                reason: "Please Enter all fields",
+            });
+        } else {
+            ueserExit = await SingUpSchema.findOne({ email: req.body.email });
+            if (userExist) {
+                const isValid = await isValidOtp(req.body.email, req.body.otp);
+
+                if (isValid) {
+                    const bySalt = await bcrypt.genSalt(10);
+                    const hashPassword = await bcrypt.hash(
+                        req.body.password,
+                        bySalt
+                    );
+
+                    SingUpSchema.updateOne(
+                        { email: req.body.email },
+                        { $set: { password: hashPassword } },
+                        (err) => {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                res.status(200).send({
+                                    success: true,
+                                    reason: "Password Change Successfully",
+                                });
+                            }
+                        }
+                    );
+                }
+            } else {
+                res.status(200).send({
+                    success: false,
+                    reason: "Please Enter Valid OTP",
+                });
+            }
+        }
+    }
+);
 
 module.exports = router;
