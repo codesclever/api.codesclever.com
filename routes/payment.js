@@ -1,5 +1,6 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
+const mongo = require("mongodb");
 const bcrypt = require("bcryptjs");
 const env = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -71,7 +72,7 @@ router.post('/razorpay',fetchuser, async (req,res)=>{
     let dt = null;
 
     try {
-        dt = await SingUpSchema.findOne({ObjectId:req.user.id},{email:true,fullname:true,phone:true,_id:false});
+        dt = await SingUpSchema.findOne({_id:mongo.ObjectId(req.user.id)},{email:true,fullname:true,phone:true,_id:false});
     } catch (error) {
         console.log(error);
     }

@@ -11,6 +11,7 @@ const sendOtpToUser = require("./validation/sendotptouser");
 const isValidOtp = require("./validation/isvalidotp");
 const SaveAuthToken = require("../models/SaveAuthToken");
 const fetchuser = require('../middleware/fetchuser');
+const mongo = require("mongodb");
 const router = express.Router();
 env.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -183,7 +184,7 @@ router.post(
 
 router.post("/getuserinfo", fetchuser, async (req, res) => {
     // let req_data = req.user;
-    const dt = await SingUpSchema.findOne({ObjectId:req.user.id},{email:true,fullname:true,phone:true,_id:false});
+    const dt = await SingUpSchema.findOne({_id:mongo.ObjectId(req.user.id)},{email:true,fullname:true,phone:true,_id:false});
     res.status(200).send(dt);
 });
 
