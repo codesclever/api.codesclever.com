@@ -33,9 +33,15 @@ router.post(
                 reason: "Please Fill all Field",
             });
         } else {
-            const userExist = await SingUpSchema.findOne({
-                email: req.body.email,
-            });
+            let userExist;
+            if(!req.body.forgotpassword){
+                userExist = await SingUpSchema.findOne({
+                    email: req.body.email,
+                });
+            }else{
+                userExist = null;
+            }
+ 
             if (userExist) {
                 res.status(200).send({
                     success: true,
@@ -255,7 +261,7 @@ router.post(
                 reason: "Please Enter all fields",
             });
         } else {
-            ueserExit = await SingUpSchema.findOne({ email: req.body.email });
+            const userExist = await SingUpSchema.findOne({ email: req.body.email });
             if (userExist) {
                 const isValid = await isValidOtp(req.body.email, req.body.otp);
 

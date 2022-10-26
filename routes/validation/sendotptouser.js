@@ -21,7 +21,18 @@ sendOtpEmail = async (email, otp) => {
         from: userEmail,
         to: email,
         subject: mailSub,
-        html: `<p>Is Your OTP  <strong>${otp}</strong> </p>`,
+        html: `
+        <h1>CodesClever</h1>
+        <p>Is Your OTP  <strong>${otp}</strong> </p>
+        <p>Do not share OTP with Others</p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <p>Team,</p>
+        <p>-CodesClever</p>
+        `,
     };
 
     try {
