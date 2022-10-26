@@ -7,10 +7,11 @@ const sendOtp = require("../models/saveotp");
 const random = require("random");
 const saveOtp = require("../models/saveotp");
 const SingUpSchema = require("../models/SingUpSchema");
-const SaveFinalCandi = require("../models/SaveFinalCandi")
+const SaveFinalCandi = require("../models/SaveFinalCandi");
 const sendOtpToUser = require("./validation/sendotptouser");
 const isValidOtp = require("./validation/isvalidotp");
 const SaveAuthToken = require("../models/SaveAuthToken");
+const SaveMsg = require("../models/SaveMsg");
 const fetchuser = require("../middleware/fetchuser");
 const mongo = require("mongodb");
 const router = express.Router();
@@ -34,14 +35,14 @@ router.post(
             });
         } else {
             let userExist;
-            if(!req.body.forgotpassword){
+            if (!req.body.forgotpassword) {
                 userExist = await SingUpSchema.findOne({
                     email: req.body.email,
                 });
-            }else{
+            } else {
                 userExist = null;
             }
- 
+
             if (userExist) {
                 res.status(200).send({
                     success: true,
@@ -207,23 +208,21 @@ router.post(
 
 router.post("/getuserinfo", fetchuser, async (req, res) => {
     // let req_data = req.user;
-    
+
     let dt = await SingUpSchema.findOne(
         { _id: mongo.ObjectId(req.user.id) },
         { email: true, fullname: true, phone: true, _id: false }
-        );
-        
-    const enrollS = await SaveFinalCandi.findOne({username:dt.email});
-    
-    if(enrollS){
+    );
+
+    const enrollS = await SaveFinalCandi.findOne({ username: dt.email });
+
+    if (enrollS) {
         dt._doc.enroll = true;
-    }
-    else{
+    } else {
         dt._doc.enroll = false;
     }
 
     res.status(200).send(dt);
-    
 });
 
 router.post("/getvaliduser", fetchuser, async (req, res) => {
@@ -261,7 +260,9 @@ router.post(
                 reason: "Please Enter all fields",
             });
         } else {
-            const userExist = await SingUpSchema.findOne({ email: req.body.email });
+            const userExist = await SingUpSchema.findOne({
+                email: req.body.email,
+            });
             if (userExist) {
                 const isValid = await isValidOtp(req.body.email, req.body.otp);
 
@@ -293,6 +294,45 @@ router.post(
                     reason: "Please Enter Valid OTP",
                 });
             }
+        }
+    }
+);
+
+router.post(
+    "/sendmsg",
+    [
+        body("name", "please enter name").exists(),
+        body("email", "please enter email").exists(),
+        body("msg", "please enter msg").exists(),
+    ],
+    (req, res) => {
+        const validReq = validationResult(req);
+        if (!validReq.isEmpty()) {
+            res.status(200).json({
+                success: false,
+                reason: "Please Enter all fields",
+            });
+        } else {
+            svData = {
+                name: req.body.name,
+                email: req.body.email,
+                msg: req.body.msg,
+            };
+
+            SaveMsg.create(svData, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.send({
+                        success: false,
+                        reason: "Internal server error",
+                    });
+                } else {
+                    res.send({
+                        success: true,
+                        reason: "Save msg successfully",
+                    });
+                }
+            });
         }
     }
 );
