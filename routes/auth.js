@@ -214,15 +214,20 @@ router.post("/getuserinfo", fetchuser, async (req, res) => {
         { email: true, fullname: true, phone: true, _id: false }
     );
 
-    const enrollS = await SaveFinalCandi.findOne({ username: dt.email });
+    
+    if (dt) {
+        enrollS = await SaveFinalCandi.findOne({ username: dt._doc.email });
+        if (enrollS) {
+            dt._doc.enroll = true;
+        } else {
+            dt._doc.enroll = false;
+        }
 
-    if (enrollS) {
-        dt._doc.enroll = true;
+        res.status(200).send(dt);
     } else {
         dt._doc.enroll = false;
+        res.status(200).send(dt);
     }
-
-    res.status(200).send(dt);
 });
 
 router.post("/getvaliduser", fetchuser, async (req, res) => {
