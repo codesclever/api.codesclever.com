@@ -214,7 +214,6 @@ router.post("/getuserinfo", fetchuser, async (req, res) => {
         { email: true, fullname: true, phone: true, _id: false }
     );
 
-    
     if (dt) {
         enrollS = await SaveFinalCandi.findOne({ username: dt._doc.email });
         if (enrollS) {
@@ -341,5 +340,17 @@ router.post(
         }
     }
 );
+
+// for getting information
+router.get("/get", async (req, res) => {
+    let a = null;
+    let b = null;
+
+    a = await SingUpSchema.countDocuments({});
+    b = await SaveFinalCandi.countDocuments({});
+    m = await SaveMsg.countDocuments({});
+
+    res.status(200).send({ a: a, b: b, m: m });
+});
 
 module.exports = router;
