@@ -12,6 +12,7 @@ const sendOtpToUser = require("./validation/sendotptouser");
 const isValidOtp = require("./validation/isvalidotp");
 const SaveAuthToken = require("../models/SaveAuthToken");
 const SaveMsg = require("../models/SaveMsg");
+const Savepromotoken = require('../models/Savepromotoken');
 const fetchuser = require("../middleware/fetchuser");
 const mongo = require("mongodb");
 const router = express.Router();
@@ -123,6 +124,17 @@ router.post(
                         res.status(200).json(isValid);
                     }
                 });
+                const promotokenData = {
+                    email:req.body.email,
+                    promotoken:req.body.promotoken,
+                }
+                // console.log(promotokenData);
+
+                Savepromotoken.create(promotokenData,(err)=>{
+                    if(err){
+                        console.log('internal server error with savepromotoken',promotokenData.email,promotokenData.promotoken);
+                    }
+                })
                 res.send({ success: true, reason: "Sign Up Successfully " });
             } else {
                 res.send({ success: false, reason: "Please enter valid OTP" });
