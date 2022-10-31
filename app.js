@@ -20,6 +20,7 @@ app.use(express.json());
 // Available API 
 app.use('/api/auth',require('./routes/auth'));
 app.use('/api/payment',require('./routes/payment'));
+app.use('/api/exam',require('./routes/exam'));
 console.log(process.env.MONGO_URI);
 
 
