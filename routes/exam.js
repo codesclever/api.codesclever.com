@@ -149,12 +149,12 @@ router.post("/saveqna", (req, res) => {
 });
 
 router.post("/liveboard", async (req, res) => {
-    const livedata = await Totalmarks.find().limit(100).sort({ marks: 1 });
+    const livedata = await Totalmarks.find().limit(100).sort({ marks: -1 });
     res.send(livedata);
 });
 
 router.get("/liveboard", async (req, res) => {
-    const livedata = await Totalmarks.find().limit(100).sort({ marks: 1 });
+    const livedata = await Totalmarks.find().limit(100).sort({ marks: -1 });
     res.send(livedata);
 });
 
