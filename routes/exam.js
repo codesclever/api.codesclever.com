@@ -61,7 +61,7 @@ router.post("/endexam", fetchuser, async (req, res) => {
 
     Totalmarks.updateOne(
         { email: Cdata.email },
-        { $set: { timeRequired: eval(et-st) } },
+        { $set: { timeRequired: eval(et - st) } },
         (err) => {
             if (err) {
                 console.log(err, cTime, Cdata.email);
@@ -153,6 +153,11 @@ router.post("/liveboard", async (req, res) => {
     res.send(livedata);
 });
 
+router.get("/liveboard", async (req, res) => {
+    const livedata = await Totalmarks.find().limit(100).sort({ marks: 1 });
+    res.send(livedata);
+});
+
 router.post("/getvalid", fetchuser, async (req, res) => {
     const dt = await SingUpSchema.findOne({
         _id: mongo.ObjectId(req.user.id),
@@ -179,6 +184,22 @@ router.post("/getvalid", fetchuser, async (req, res) => {
     } else {
         res.send({ success: false, reason: "enroll and get the test" });
     }
+});
+
+router.post("/updatelive", (req, res) => {
+    data = {
+        email: req.body.email,
+        marks: req.body.marks,
+        timeRequired: req.body.timetaken,
+    };
+
+    Totalmarks.create(data, (err) => {
+        if (err) {
+            res.send({ success: false, reason: "internal server error" });
+        } else {
+            res.send({ success: true, reason: "update successfully" });
+        }
+    });
 });
 
 router.get("/", (req, res) => {
