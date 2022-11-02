@@ -6,6 +6,7 @@ const SingUpSchema = require("../models/SingUpSchema");
 const Saveans = require("../models/Saveans");
 const Totalmarks = require("../models/Totalmarks");
 const SaveFinalCandi = require("../models/SaveFinalCandi");
+const Setdata = require("../models/Setdata");
 
 const router = express.Router();
 
@@ -149,7 +150,7 @@ router.post("/saveqna", (req, res) => {
 });
 
 router.post("/liveboard", async (req, res) => {
-    const livedata = await Totalmarks.find().limit(100).sort({ marks: -1 });
+    const livedata = await Setdata.find().limit(100).sort({ marks: -1 });
     res.send(livedata);
 });
 
@@ -193,7 +194,7 @@ router.post("/updatelive", (req, res) => {
         timeRequired: req.body.timetaken,
     };
 
-    Totalmarks.create(data, (err) => {
+    Setdata.create(data, (err) => {
         if (err) {
             res.send({ success: false, reason: "internal server error" });
         } else {
