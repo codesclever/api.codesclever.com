@@ -12,9 +12,10 @@ const sendOtpToUser = require("./validation/sendotptouser");
 const isValidOtp = require("./validation/isvalidotp");
 const SaveAuthToken = require("../models/SaveAuthToken");
 const SaveMsg = require("../models/SaveMsg");
-const Savepromotoken = require('../models/Savepromotoken');
+const Savepromotoken = require("../models/Savepromotoken");
 const fetchuser = require("../middleware/fetchuser");
 const mongo = require("mongodb");
+const Totalmarks = require("../models/Totalmarks");
 const router = express.Router();
 env.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -125,16 +126,20 @@ router.post(
                     }
                 });
                 const promotokenData = {
-                    email:req.body.email,
-                    promotoken:req.body.promotoken,
-                }
+                    email: req.body.email,
+                    promotoken: req.body.promotoken,
+                };
                 // console.log(promotokenData);
 
-                Savepromotoken.create(promotokenData,(err)=>{
-                    if(err){
-                        console.log('internal server error with savepromotoken',promotokenData.email,promotokenData.promotoken);
+                Savepromotoken.create(promotokenData, (err) => {
+                    if (err) {
+                        console.log(
+                            "internal server error with savepromotoken",
+                            promotokenData.email,
+                            promotokenData.promotoken
+                        );
                     }
-                })
+                });
                 res.send({ success: true, reason: "Sign Up Successfully " });
             } else {
                 res.send({ success: false, reason: "Please enter valid OTP" });
@@ -230,6 +235,10 @@ router.post("/getuserinfo", fetchuser, async (req, res) => {
         enrollS = await SaveFinalCandi.findOne({ username: dt._doc.email });
         if (enrollS) {
             dt._doc.enroll = true;
+            marks = await Totalmarks.findOne({ email: dt._doc.email });
+            if (marks) {
+                dt._doc.marks = marks.marks;
+            }
         } else {
             dt._doc.enroll = false;
         }
