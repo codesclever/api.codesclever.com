@@ -5,6 +5,7 @@ const fetchuser = require("../middleware/fetchuser");
 const SingUpSchema = require("../models/SingUpSchema");
 const Saveans = require("../models/Saveans");
 const Totalmarks = require("../models/Totalmarks");
+const RewardForm = require("../models/RewardForm");
 const SaveFinalCandi = require("../models/SaveFinalCandi");
 const Setdata = require("../models/Setdata");
 
@@ -157,7 +158,9 @@ router.post("/liveboard", async (req, res) => {
 });
 
 router.get("/liveboard", async (req, res) => {
-    const livedata = await Totalmarks.find().limit(100).sort({ marks: -1, timeRequired: 1 });
+    const livedata = await Totalmarks.find()
+        .limit(100)
+        .sort({ marks: -1, timeRequired: 1 });
     res.send(livedata);
 });
 
@@ -201,6 +204,34 @@ router.post("/updatelive", (req, res) => {
             res.send({ success: false, reason: "internal server error" });
         } else {
             res.send({ success: true, reason: "update successfully" });
+        }
+    });
+});
+
+router.post("/rewardform", fetchuser, (req, res) => {
+    const rewardData = {
+        officialname: req.body.officialname,
+        email: req.body.email,
+        contact: req.body.contact,
+        street1: req.body.street1,
+        street2: req.body.street2,
+        city: req.body.city,
+        postalcode: req.body.postalcode,
+        state: req.body.state,
+        tshirtsize: req.body.tshirtsize,
+    };
+
+    RewardForm.create(rewardData, (err) => {
+        if (err) {
+            res.send({
+                success: false,
+                reason: "please check all fields are filled internal server error",
+            });
+        } else {
+            res.send({
+                success: true,
+                reason: "Your information save successfully",
+            });
         }
     });
 });
